@@ -3,6 +3,7 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 
 using namespace std;
 
@@ -13,9 +14,9 @@ using namespace std;
 #define CROSSOVER_RATE            0.7
 #define MUTATION_RATE             0.001
 #define POP_SIZE                  100			//must be an even number
-#define CHROMO_LENGTH             200
+#define CHROMO_LENGTH             40
 #define GENE_LENGTH               4
-#define MAX_ALLOWABLE_GENERATIONS	300
+#define MAX_ALLOWABLE_GENERATIONS	300000
 
 //data structure for chromosones 
 struct chromo_type {
@@ -54,12 +55,25 @@ int main() {
 		{
 			//this is used during roulette wheel sampling
 			float TotalFitness = 0.0f;
+			/*float maxfitness = 0.0f;
+			int maxi = 0;*/
 			// test and update the fitness of every chromosome in the population
+			#pragma omp parallel for
 			for (int i=0; i<POP_SIZE; i++) {
 				Population[i].fitness = AssignFitness(Population[i].bits, Target);
 				TotalFitness += Population[i].fitness;
+				/*if (maxfitness < Population[i].fitness) {
+					maxfitness = Population[i].fitness;
+					maxi = i;
+				}*/
 			}
+	/*		cout << "max fitness gen:" << GenerationsRequiredToFindASolution << " is: " << maxfitness << " and solution is ";
+			PrintChromo(Population[maxi].bits);
+			cout << endl;
+*/
+
 			// check to see if we have found any solutions (fitness will be 999)
+			
 			for (int i=0; i<POP_SIZE; i++){
 				if (Population[i].fitness == 999.0f){
 					cout << "\nSolution found in " << GenerationsRequiredToFindASolution << " generations!" << endl << endl;;
@@ -94,6 +108,7 @@ int main() {
 			}//end loop
 
 			//copy temp population into main population array
+			#pragma omp parallel for
 			for (int i=0; i<POP_SIZE; i++){
 				Population[i] = temp[i];
 			}

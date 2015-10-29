@@ -131,8 +131,11 @@ float AssignFitness(string bits, int target_value)
 	// and assign an arbitarily high fitness score if this is so.
 	if (result == (float)target_value)
 		return 999.0f;
-	else
-		return 1/(float)fabs((double)(target_value - result));
+	else {
+		float x = 1/(float)fabs((double)(target_value - result));
+		
+		return x;
+	}
 	//	return result;
 }
 
@@ -205,10 +208,10 @@ void Crossover(string &offspring1, string &offspring2)
     //create a random crossover point
     int crossover = (int) (RANDOM_NUM * CHROMO_LENGTH);
 
-    string t1 = offspring1.substr(0, CHROMO_LENGTH/3) + offspring2.substr(CHROMO_LENGTH/2, CHROMO_LENGTH*2/3) + offspring1.substr(CHROMO_LENGTH*2/3, CHROMO_LENGTH);
-    string t2 = offspring2.substr(0, 20) + offspring1.substr(20, 40) + offspring2.substr(40, CHROMO_LENGTH);
+    string t1 = offspring1.substr(0, crossover) + offspring2.substr(crossover, CHROMO_LENGTH);
+    string t2 = offspring2.substr(0, crossover) + offspring1.substr(crossover, CHROMO_LENGTH);
 
-    offspring1 = t1; offspring2 = t2;
+    offspring1 = t1; offspring2 = t2;				  
   }
 }
 
